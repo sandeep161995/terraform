@@ -1,0 +1,208 @@
+Ensure that your system is up to date, and you have the gnupg, software-properties-common, and curl packages installed. You will use these packages to verify HashiCorp's GPG signature, and install HashiCorp's Debian package repository.
+
+$ sudo apt-get update && sudo apt-get install -y gnupg software-properties-common curl
+Copy
+Add the HashiCorp GPG key.
+
+$ curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+
+Add the official HashiCorp Linux repository.
+
+$ sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+
+Update to add the repository, and install the Terraform CLI.
+
+$ sudo apt-get update && sudo apt-get install terraform
+
+
+#window 
+
+~ terraform.zip file downloaded
+~ extract it.
+~ terraform.exe file location stored in environment path variable
+
+~ confirm it by type "terraform version " in cli
+
+***************************************************8
+#build infrastructure
+
+provider "aws" {
+  profile = "default"
+  region  = "ap-south-1"
+}
+
+resource "aws_instance" "app_server" {
+  ami = "ami-079b5e5b3971bd10d"
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = "ExampleAppServerInstance"
+  }
+}
+
+
+terraform init #create terrform environment and ready configuration
+terraform plan #make plan for what you want to achieve
+terraform apply # implement plan i.e. matches cureent state with desired state
+
+
+
+**************change infrastructure********
+#change ami id
+#newami_id = ubuntu instance
+
+
+provider "aws" {
+  profile = "default"
+  region  = "ap-south-1"
+}
+
+resource "aws_instance" "app_server" {
+  ami = "ami-0756a1c858554433e" #ubuntu instance
+  instance_type = "t2.micro"
+
+  tags = {
+    Name = "ExampleAppServerInstance"
+  }
+} 
+
+terraform apply
+
+*************************************8
+
+terraform destroy
+
+*****************************
+
+#define input variable
+#Name = var.instance_name (variable added)
+
+
+provider "aws" {
+  profile = "default"
+  region  = "ap-south-1"
+}
+
+resource "aws_instance" "app_server" {
+  ami = "ami-0756a1c858554433e"
+  instance_type = "t2.micro"
+
+  tags = {
+#       Name = "ExampleAppServerInstance"
+   Name = var.instance_name #variable added
+ 
+  }
+}
+
+
+#Create a new file called variables.tf with a block defining a new instance_name variable.
+
+variable "instance_name" {
+  description = "Value of the Name tag for the EC2 instance"
+  type        = string
+  default     = "ExampleAppServerInstance"
+}
+
+
+terraform apply
+
+#also we can define by command line
+
+terraform apply -var "instance_name=YetAnotherName"
+
+
+******************************************8
+# query data with output
+#Create a file called outputs.tf in your learn-terraform-aws-instance directory.
+
+
+output "instance_id" {
+  description = "ID of the EC2 instance"
+  value       = aws_instance.app_server.id
+}
+
+output "instance_public_ip" {
+  description = "Public IP address of the EC2 instance"
+  value       = aws_instance.app_server.public_ip
+}
+
+
+terraform apply
+
+Outputs:
+
+instance_id = "i-0e2cf8a20c1f08ec8"
+instance_public_ip = "43.204.148.61"
+
+
+*******************************************
+
+# remote login
+
+#main.tf
+
+terraform {
+  cloud {
+    organization = "hashicorp-smarty" #terraform cloud
+
+    workspaces {
+      name = "workspace-smarty"
+
+    }
+ 
+  }
+}
+
+ 
+
+provider "aws" {
+  profile = "default"
+  region  = "ap-south-1"
+}
+
+resource "aws_instance" "app_server" {
+  ami = "ami-0756a1c858554433e"
+  instance_type = "t2.micro"
+
+  tags = {
+#       Name = "ExampleAppServerInstance"
+   Name = var.instance_name #variable added
+ 
+  }
+
+
+}
+
+
+
+
+#login into terraform cloud
+#make account on terraform  cloud 
+
+terraform login
+
+#make token for connection
+
+#paste it when ask
+
+terraform init
+
+#terraform cloud connected
+#delete local tfstate file
+
+rm terraform.tfstate
+
+
+#create environment variables 
+aws_access_key_id 
+and 
+aws_secret_access_key
+#put their value from iamrole in aws console
+
+terraform apply
+
+#you successfully create remote state
+
+terraform destroy
+
+#delete aws instance

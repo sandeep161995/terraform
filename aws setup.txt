@@ -1,0 +1,43 @@
+~ terraform.zip file downloaded
+~ extract it.
+~ terraform.exe file location stored in environment path variable
+
+~ confirm it by type "terraform version " in cli
+
+
+* aws cli :
+
+go to below aws site and download awscli.msi file
+ 
+https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+
+~ open up ans install awscli.msi file
+
+~ check it by type "aws" in commandline
+
+* create new folder to setup terraform file 
+*create "any_name.tf" file in it
+* create user in iamrole in aws console to get acess key and secret key
+
+
+*add these codes in it:
+
+^ 
+
+
+provider "aws" {
+    region = "ap-south-1" 
+ access_key = "AKIA5FIMAEBUKQPN****"
+    secret_key = "EJdjcc6CGwMg5Tep8qynXumIexXtq3zouls****"
+   
+}
+resource "aws_instance" "sd" {
+    ami = "ami-079b5e5b3971bd10d"
+    instance_type = "t2.micro"
+}
+
+steps:
+terraform init
+terraform plan
+terraform apply
+terraform destroy

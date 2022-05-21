@@ -1,0 +1,82 @@
+* create main.tf
+
+resource "local_file" "sd" {
+filename="/home/rhyme/demo/test.txt"
+content="welcome to terrafom"
+}
+
+terraform init
+terraform plan
+terraform apply
+
+*using variables in tf
+
+~ main.tf
+resource "local_file" "sd" {
+filename= var.filename
+content=var.content
+file_permission="0755" #default 0777
+}
+~ variable.tf
+variable "filename" {
+default="/home/rhyme/demo/test.txt"
+type = string
+{
+variable "content" {
+type=string
+default="welcome to  my home"
+}
+
+
+terraform init
+terraform plan
+terraform apply
+
+* terraform tfvars *******8
+
+`terraform.tfvars
+
+filename="/home/rhyme/demo/pets.txt"
+content="cat"
+
+
+terraform apply
+
+`terraform.tfvars.json
+
+{
+"filename"="/home/rhyme/demo/pets.txt",
+"content"="cat"
+}
+
+terraform apply
+
+
+*************create resource in azure***********8
+
+~ main.tf
+
+resource azurem_resource_group "test" {
+name = "test"
+location = "west us"
+tags= {
+ env = "terraform demo"
+}
+
+}
+
+provider "azure" {
+features{}
+}
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "=3.0.0"
+    }
+  }
+}
+
+terraform init 
+terraform plan
+terraform apply
